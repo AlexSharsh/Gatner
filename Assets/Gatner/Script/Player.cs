@@ -8,7 +8,9 @@ public class Player : MonoBehaviour
     private bool _jump = false;
     private bool _jumpUpDown = false;
     public float speed = 2f;
-    public float speedJump = 10f;
+    public float speedJump = 2f;
+    public float speedRotate = 25f;
+    private bool _isSprint = false;
 
 
     private void Awake()
@@ -25,31 +27,34 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKey(KeyCode.W))
-        {
-            _direction.z = -1;
-        }
-        else if (Input.GetKey(KeyCode.S))
-        {
-            _direction.z = 1;
-        }
-        else
-        {
-            _direction.z = 0;
-        }
+        _direction.x = Input.GetAxis("Horizontal");
+        _direction.z = Input.GetAxis("Vertical");
 
-        if (Input.GetKey(KeyCode.A))
-        {
-            _direction.x = 1;
-        }
-        else if (Input.GetKey(KeyCode.D))
-        {
-            _direction.x = -1;
-        }
-        else
-        {
-            _direction.x = 0;
-        }
+        //if (Input.GetKey(KeyCode.W))
+        //{
+        //    _direction.z = -1;
+        //}
+        //else if (Input.GetKey(KeyCode.S))
+        //{
+        //    _direction.z = 1;
+        //}
+        //else
+        //{
+        //    _direction.z = 0;
+        //}
+
+        //if (Input.GetKey(KeyCode.A))
+        //{
+        //    _direction.x = 1;
+        //}
+        //else if (Input.GetKey(KeyCode.D))
+        //{
+        //    _direction.x = -1;
+        //}
+        //else
+        //{
+        //    _direction.x = 0;
+        //}
 
         if (_jump == false)
         {
@@ -63,12 +68,16 @@ public class Player : MonoBehaviour
     void FixedUpdate()
     {
         Move(Time.deltaTime);
+        transform.Rotate(new Vector3(0, Input.GetAxis("Mouse X") * speedRotate /** Time.fixedDeltaTime*/, 0));
+
         Jump();
     }
     
     private void Move(float delta)
     {
-        transform.position += _direction * speed * delta;
+        //transform.position += _direction * speed * delta;
+        var fixedDirection = transform.TransformDirection(_direction.normalized);
+        transform.position += fixedDirection * (_jump ? speed * 3 : speed) * delta;
     }
 
     private void Jump()
