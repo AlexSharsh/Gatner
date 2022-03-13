@@ -60,6 +60,9 @@
     <Compile Include="Assets\3D Beginner\TutorialInfo\Scripts\Readme.cs" />
     <Compile Include="Assets\Beautiful Progress Bar Free - CYKO\Scripts\SliderScripts.cs" />
     <Compile Include="Assets\FREE GatlingGun\Turrets\Gatling Gun\Scripts\GatlingGun.cs" />
+    <Compile Include="Assets\Gatner\Script\FattyCannon.cs" />
+    <Compile Include="Assets\Gatner\Script\FattyMortar.cs" />
+    <Compile Include="Assets\Gatner\Script\GatelingGun.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\3D Beginner\3DBeginner_Third-PartyNotice.txt" />
