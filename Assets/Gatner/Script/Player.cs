@@ -8,8 +8,19 @@ public class Player : MonoBehaviour
     private bool _jump = false;
     private bool _jumpUpDown = false;
     public float speed = 2f;
-    public float speedJump = 10f;
+    public float speedJump = 2f;
+    public float speedRotate = 25f;
+    private bool _isSprint = false;
 
+    private bool allowFattyCannon = false;
+    private bool allowFattyMortar = false;
+    private bool allowGatelingGun = false;
+
+    public FattyCannon _fattyCannon;
+    public FattyMortar _fattyMortar;
+    public GatelingGun _gatelingGun;
+
+    private Camera MainCamera;
 
     private void Awake()
     {
@@ -19,56 +30,86 @@ public class Player : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        MainCamera = GetComponent<Camera>();
+        MainCamera = Camera.main;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKey(KeyCode.W))
+        if (Input.GetKeyDown(KeyCode.E))
         {
-            _direction.z = -1;
-        }
-        else if (Input.GetKey(KeyCode.S))
-        {
-            _direction.z = 1;
-        }
-        else
-        {
-            _direction.z = 0;
-        }
-
-        if (Input.GetKey(KeyCode.A))
-        {
-            _direction.x = 1;
-        }
-        else if (Input.GetKey(KeyCode.D))
-        {
-            _direction.x = -1;
-        }
-        else
-        {
-            _direction.x = 0;
-        }
-
-        if (_jump == false)
-        {
-            if (Input.GetKey(KeyCode.Space))
+            if (allowFattyCannon)
             {
-                _jump = true;
+                MainCamera.enabled = !MainCamera.enabled;
+                _fattyCannon.enable = !_fattyCannon.enable;
+            }
+
+            if (allowFattyMortar)
+            {
+                MainCamera.enabled = !MainCamera.enabled;
+                _fattyMortar.enable = !_fattyMortar.enable;
+            }
+
+            if (allowGatelingGun)
+            {
+                MainCamera.enabled = !MainCamera.enabled;
+                _gatelingGun.enable = !_gatelingGun.enable;
+            }
+        }
+
+        if (MainCamera.enabled)
+        {
+            _direction.x = Input.GetAxis("Horizontal");
+            _direction.z = Input.GetAxis("Vertical");
+
+
+            if (_jump == false)
+            {
+                if (Input.GetKey(KeyCode.Space))
+                {
+                    _jump = true;
+                }
+            }
+        }
+        else
+        {
+            if (_fattyCannon.IsNeedChangeView())
+            {
+                _fattyCannon.ResetState();
+                MainCamera.enabled = !MainCamera.enabled;
+            }
+
+            if (_fattyMortar.IsNeedChangeView())
+            {
+                _fattyMortar.ResetState();
+                MainCamera.enabled = !MainCamera.enabled;
+            }
+
+            if (_gatelingGun.IsNeedChangeView())
+            {
+                _gatelingGun.ResetState();
+                MainCamera.enabled = !MainCamera.enabled;
             }
         }
     }
 
     void FixedUpdate()
     {
-        Move(Time.deltaTime);
-        Jump();
+        if (MainCamera.enabled)
+        {
+            Move(Time.deltaTime);
+            transform.Rotate(new Vector3(0, Input.GetAxis("Mouse X") * speedRotate /** Time.fixedDeltaTime*/, 0));
+
+            Jump();
+        }
     }
     
     private void Move(float delta)
     {
-        transform.position += _direction * speed * delta;
+        //transform.position += _direction * speed * delta;
+        var fixedDirection = transform.TransformDirection(_direction.normalized);
+        transform.position += fixedDirection * (_jump ? speed * 3 : speed) * delta;
     }
 
     private void Jump()
@@ -101,6 +142,42 @@ public class Player : MonoBehaviour
                     _jump = false;
                 }
             }
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("FattyCannon"))
+        {
+            allowFattyCannon = true;
+        }
+
+        if (other.CompareTag("FattyMortar"))
+        {
+            allowFattyMortar = true;
+        }
+
+        if (other.CompareTag("GatelingGun"))
+        {
+            allowGatelingGun = true;
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("FattyCannon"))
+        {
+            allowFattyCannon = false;
+        }
+
+        if (other.CompareTag("FattyMortar"))
+        {
+            allowFattyMortar = false;
+        }
+
+        if (other.CompareTag("GatelingGun"))
+        {
+            allowGatelingGun = false;
         }
     }
 }

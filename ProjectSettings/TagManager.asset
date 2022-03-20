@@ -3,7 +3,14 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Enemy
+  - FattyCannon
+  - FattyMortar
+  - GatelingGun
+  - Bullet
+  - Slug
+  - Bullet1
   layers:
   - Default
   - TransparentFX
