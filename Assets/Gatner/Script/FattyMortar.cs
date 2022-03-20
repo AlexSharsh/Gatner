@@ -11,6 +11,7 @@ public class FattyMortar : MonoBehaviour
     public float speedRotate = 25f;
 
     [SerializeField] public Camera MortarCamera;
+    [SerializeField] public Bullet1 _bullet1;
 
     private bool pressedKeyE = false;
     Quaternion originRotation;
@@ -36,6 +37,11 @@ public class FattyMortar : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.E))
             {
                 pressedKeyE = true;
+            }
+
+            if (Input.GetMouseButtonDown(0))
+            {
+                Fire();
             }
         }
         else
@@ -63,6 +69,13 @@ public class FattyMortar : MonoBehaviour
 
             transform.rotation = originRotation * rotateX * rotateY;
         }
+    }
+
+    private void Fire()
+    {
+        var shieldObj = Instantiate(_bullet1, _bullet1.transform.position, _bullet1.transform.rotation);
+        var shield = shieldObj.GetComponent<Bullet1>();
+        shield.Init(/*_player.transform,*/ 1, 20f);
     }
 
     public bool IsNeedChangeView()

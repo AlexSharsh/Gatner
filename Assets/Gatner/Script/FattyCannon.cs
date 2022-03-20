@@ -11,6 +11,7 @@ public class FattyCannon : MonoBehaviour
     public float speedRotate = 25f;
 
     [SerializeField] public Camera CannonCamera;
+    [SerializeField] public Bullet _bullet;
 
     private bool pressedKeyE = false;
     Quaternion originRotation;
@@ -37,6 +38,11 @@ public class FattyCannon : MonoBehaviour
             {
                 pressedKeyE = true;
             }
+
+            if (Input.GetMouseButtonDown(0))
+            {
+                Fire();
+            } 
         }
         else
         {
@@ -53,8 +59,8 @@ public class FattyCannon : MonoBehaviour
         {
             angleX += Input.GetAxis("Mouse X") * speedRotate;
             angleY += Input.GetAxis("Mouse Y") * speedRotate;
-            if (angleY <= 0)
-                angleY = 0;
+            if (angleY <= -5)
+                angleY = -5;
             if (angleY >= 45)
                 angleY = 45;
 
@@ -63,6 +69,13 @@ public class FattyCannon : MonoBehaviour
 
             transform.rotation = originRotation * rotateX * rotateY;
         }
+    }
+
+    private void Fire()
+    {
+        var shieldObj = Instantiate(_bullet, _bullet.transform.position, _bullet.transform.rotation);
+        var shield = shieldObj.GetComponent<Bullet>();
+        shield.Init(/*_player.transform,*/ 1, 20f);
     }
 
     public bool IsNeedChangeView()

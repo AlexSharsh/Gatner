@@ -8,6 +8,9 @@ TagManager:
   - FattyCannon
   - FattyMortar
   - GatelingGun
+  - Bullet
+  - Slug
+  - Bullet1
   layers:
   - Default
   - TransparentFX

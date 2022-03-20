@@ -57,12 +57,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Gatner\Script\Player.cs" />
-    <Compile Include="Assets\3D Beginner\TutorialInfo\Scripts\Readme.cs" />
-    <Compile Include="Assets\Beautiful Progress Bar Free - CYKO\Scripts\SliderScripts.cs" />
-    <Compile Include="Assets\FREE GatlingGun\Turrets\Gatling Gun\Scripts\GatlingGun.cs" />
+    <Compile Include="Assets\Gatner\Script\ITakeDamage.cs" />
     <Compile Include="Assets\Gatner\Script\FattyCannon.cs" />
-    <Compile Include="Assets\Gatner\Script\FattyMortar.cs" />
+    <Compile Include="Assets\3D Beginner\TutorialInfo\Scripts\Readme.cs" />
     <Compile Include="Assets\Gatner\Script\GatelingGun.cs" />
+    <Compile Include="Assets\Beautiful Progress Bar Free - CYKO\Scripts\SliderScripts.cs" />
+    <Compile Include="Assets\Gatner\Script\FattyMortar.cs" />
+    <Compile Include="Assets\Gatner\Script\Bullet.cs" />
+    <Compile Include="Assets\FREE GatlingGun\Turrets\Gatling Gun\Scripts\GatlingGun.cs" />
+    <Compile Include="Assets\Gatner\Script\Spawner.cs" />
+    <Compile Include="Assets\Gatner\Script\Slug.cs" />
+    <Compile Include="Assets\Gatner\Script\Bullet1.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\3D Beginner\3DBeginner_Third-PartyNotice.txt" />
