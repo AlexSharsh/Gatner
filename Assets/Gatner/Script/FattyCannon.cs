@@ -85,6 +85,7 @@ public class FattyCannon : MonoBehaviour
 
     public void ResetState()
     {
+        enable = false;
         pressedKeyE = false;
     }
 

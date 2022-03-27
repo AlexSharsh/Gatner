@@ -37,29 +37,29 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            if (allowFattyCannon)
-            {
-                MainCamera.enabled = !MainCamera.enabled;
-                _fattyCannon.enable = !_fattyCannon.enable;
-            }
-
-            if (allowFattyMortar)
-            {
-                MainCamera.enabled = !MainCamera.enabled;
-                _fattyMortar.enable = !_fattyMortar.enable;
-            }
-
-            if (allowGatelingGun)
-            {
-                MainCamera.enabled = !MainCamera.enabled;
-                _gatelingGun.enable = !_gatelingGun.enable;
-            }
-        }
-
         if (MainCamera.enabled)
         {
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                if (allowFattyCannon)
+                {
+                    MainCamera.enabled = !MainCamera.enabled;
+                    _fattyCannon.enable = !_fattyCannon.enable;
+                }
+
+                if (allowFattyMortar)
+                {
+                    MainCamera.enabled = !MainCamera.enabled;
+                    _fattyMortar.enable = !_fattyMortar.enable;
+                }
+
+                if (allowGatelingGun)
+                {
+                    MainCamera.enabled = !MainCamera.enabled;
+                    _gatelingGun.enable = !_gatelingGun.enable;
+                }
+            }
+
             _direction.x = Input.GetAxis("Horizontal");
             _direction.z = Input.GetAxis("Vertical");
 
