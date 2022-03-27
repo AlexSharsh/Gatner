@@ -1,12 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = System.Random;
 
 public class Spawner : MonoBehaviour
 {
-    [SerializeField] private GameObject _enemyPrefab;
+    [SerializeField] private GameObject _enemyPrefabs;
     [SerializeField] private Transform[] _spawnPoints;
-    
+    [SerializeField] private Transform[] _patrolPoints;
+    [SerializeField] private SlugAI _slugAI;
+
     [SerializeField] private float _timeCuldown;
 
     [SerializeField] private bool[] _fillPoints;
@@ -19,6 +22,7 @@ public class Spawner : MonoBehaviour
     {
         _enemys = new List<GameObject>();
         _fillPoints = new bool[_spawnPoints.Length];
+        _slugAI.SetPatrolPoints(_patrolPoints);
     }
 
     private void Start()
@@ -57,9 +61,14 @@ public class Spawner : MonoBehaviour
 
     private void Spawn()
     {
+        Random enemyId = new Random();
+        int idx;
+
         for (int i = 0; i < _spawnPoints.Length; i++)
         {
-            _enemys.Add(Instantiate(_enemyPrefab, _spawnPoints[i].position, Quaternion.identity));
+            //idx = enemyId.Next(0, _enemyPrefabs.Length - 1);
+            _enemys.Add(Instantiate(_enemyPrefabs, _spawnPoints[i].position, Quaternion.identity));
+            
             _fillPoints[i] = true;
         }
 

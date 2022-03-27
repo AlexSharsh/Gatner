@@ -65,6 +65,7 @@ public class GatelingGun : MonoBehaviour
 
     public void ResetState()
     {
+        enable = false;
         pressedKeyE = false;
     }
 }

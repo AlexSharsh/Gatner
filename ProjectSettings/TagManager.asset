@@ -11,6 +11,11 @@ TagManager:
   - Bullet
   - Slug
   - Bullet1
+  - DoorSlideStopPosition
+  - DoorSlideStartPosition
+  - DoorMoveHomePosition
+  - DoorMoveNotHomePosition
+  - Door
   layers:
   - Default
   - TransparentFX

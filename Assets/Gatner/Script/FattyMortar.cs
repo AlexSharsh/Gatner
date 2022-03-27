@@ -85,6 +85,7 @@ public class FattyMortar : MonoBehaviour
 
     public void ResetState()
     {
+        enable = false;
         pressedKeyE = false;
     }
 }
