@@ -11,13 +11,20 @@ public class SlugAI : MonoBehaviour
         FOLLOW_AGENT,
         PATROL_AGENT
     }
-
+    [SerializeField] private Bullet _bullet;
+    [SerializeField] private Bullet1 _bullet1;
+    [SerializeField] private float _healthLevel = 9;
+    [SerializeField] private float _damageLevel = 10;
     [SerializeField] private Player _player;
     [SerializeField] private AgentMode _agentMode;
     [SerializeField] private Transform[] PatrolPoints;
+    [SerializeField] TextMesh _textHealth;
     private NavMeshAgent _agent;
     private int PatrolPointsIndex;
     private bool _isPatrol;
+    private float _health_100;
+
+    private System.DateTime _datetime = System.DateTime.Now;
 
     private void Awake()
     {
@@ -25,6 +32,9 @@ public class SlugAI : MonoBehaviour
         _agent = GetComponent<NavMeshAgent>();
 
         _isPatrol = true;
+
+        _health_100 = _healthLevel;
+        OutSlugHealth(_healthLevel);
     }
 
     // Start is called before the first frame update
@@ -105,5 +115,70 @@ public class SlugAI : MonoBehaviour
     public void SetPatrolPoints(Transform[] points)
     {
         PatrolPoints = points;
+    }
+
+    public float GetDamageLevel()
+    {
+        return _damageLevel;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if ((System.DateTime.Now - _datetime).Milliseconds >= 100)
+        {
+            if (other.CompareTag("Bullet"))
+            {
+                _agentMode = AgentMode.FOLLOW_AGENT;
+                _agent.speed = 2.0f;
+
+                if (_healthLevel > 0)
+                {
+                    _healthLevel -= _bullet.GetBulletDamage();
+                    Debug.LogFormat("_damageLevel = {0}", _healthLevel);
+                }
+
+                OutSlugHealth(_healthLevel);
+                if (_healthLevel <= 0)
+                {
+                    SlugHealthDisable();
+                    Destroy(gameObject);
+                }
+
+
+                _datetime = System.DateTime.Now;
+            }
+
+            if (other.CompareTag("Bullet1"))
+            {
+                _agentMode = AgentMode.FOLLOW_AGENT;
+                _agent.speed = 2.0f;
+
+                if (_healthLevel > 0)
+                {
+                    _healthLevel -= _bullet1.GetBulletDamage();
+                }
+
+                OutSlugHealth(_healthLevel);
+                if (_healthLevel <= 0)
+                {
+                    SlugHealthDisable();
+                    Destroy(gameObject);
+                }
+
+                _datetime = System.DateTime.Now;
+            }
+        }
+    }
+
+    private void OutSlugHealth(float health)
+    {
+        float ps = health  * 100 / _health_100;
+        
+        _textHealth.text = $"{string.Format("{0:F0}", ps)}" + "%";
+    }
+
+    private void SlugHealthDisable()
+    {
+        _textHealth.text = "";
     }
 }

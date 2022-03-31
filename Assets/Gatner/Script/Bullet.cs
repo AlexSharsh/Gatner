@@ -37,6 +37,11 @@ public class Bullet : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        if (other.CompareTag("SlugBoss"))
+        {
+            Destroy(gameObject);
+        }
     }
 
     public float GetBulletDamage()

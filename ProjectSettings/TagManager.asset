@@ -16,6 +16,9 @@ TagManager:
   - DoorMoveHomePosition
   - DoorMoveNotHomePosition
   - Door
+  - SpawnerBossPoint
+  - SlugBoss
+  - DeadCamera
   layers:
   - Default
   - TransparentFX

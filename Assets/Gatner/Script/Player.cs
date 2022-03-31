@@ -4,13 +4,19 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    [SerializeField] float _healthLevel = 100f;
+    [SerializeField] SlugAI _slugAI;
+    [SerializeField] SlugBossAI _slugBossAI;
+    [SerializeField] TextMesh _textHealth;
+
     private Vector3 _direction;
     private bool _jump = false;
     private bool _jumpUpDown = false;
     public float speed = 2f;
     public float speedJump = 2f;
-    public float speedRotate = 25f;
+    public float speedRotate = 15f;
     private bool _isSprint = false;
+    private bool _isGameOver = false;
 
     private bool allowFattyCannon = false;
     private bool allowFattyMortar = false;
@@ -21,87 +27,117 @@ public class Player : MonoBehaviour
     public GatelingGun _gatelingGun;
 
     private Camera MainCamera;
+    [SerializeField] private Camera DeadCamera;
+
+    private Rigidbody _rigidBody;
+    [SerializeField] private Animator _anim;
+
+    private float _health_100;
+
+    private System.DateTime _datetime = System.DateTime.Now;
 
     private void Awake()
     {
+        DeadCamera.enabled = false;
+        MainCamera = GetComponent<Camera>();
+        MainCamera = Camera.main;
 
+        _anim = GetComponent<Animator>();
+        _rigidBody = GetComponent<Rigidbody>();
+
+        _health_100 = _healthLevel;
+        OutPlayerHealth(_healthLevel);
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        MainCamera = GetComponent<Camera>();
-        MainCamera = Camera.main;
+        
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (MainCamera.enabled)
+        if (!_isGameOver)
         {
-            if (Input.GetKeyDown(KeyCode.E))
+            if (MainCamera.enabled)
             {
-                if (allowFattyCannon)
+                if (Input.GetKeyDown(KeyCode.E))
                 {
-                    MainCamera.enabled = !MainCamera.enabled;
-                    _fattyCannon.enable = !_fattyCannon.enable;
+                    if (allowFattyCannon)
+                    {
+                        MainCamera.enabled = !MainCamera.enabled;
+                        _fattyCannon.enable = !_fattyCannon.enable;
+                    }
+
+                    if (allowFattyMortar)
+                    {
+                        MainCamera.enabled = !MainCamera.enabled;
+                        _fattyMortar.enable = !_fattyMortar.enable;
+                    }
+
+                    if (allowGatelingGun)
+                    {
+                        MainCamera.enabled = !MainCamera.enabled;
+                        _gatelingGun.enable = !_gatelingGun.enable;
+                    }
                 }
 
-                if (allowFattyMortar)
-                {
-                    MainCamera.enabled = !MainCamera.enabled;
-                    _fattyMortar.enable = !_fattyMortar.enable;
-                }
+                _direction.x = Input.GetAxis("Horizontal");
+                _direction.z = Input.GetAxis("Vertical");
 
-                if (allowGatelingGun)
+                _anim.SetBool("IsWalking", _direction != Vector3.zero);
+
+                if (_jump == false)
                 {
-                    MainCamera.enabled = !MainCamera.enabled;
-                    _gatelingGun.enable = !_gatelingGun.enable;
+                    if (Input.GetKey(KeyCode.Space))
+                    {
+                        _jump = true;
+                    }
                 }
             }
-
-            _direction.x = Input.GetAxis("Horizontal");
-            _direction.z = Input.GetAxis("Vertical");
-
-
-            if (_jump == false)
+            else
             {
-                if (Input.GetKey(KeyCode.Space))
+                if (_fattyCannon.IsNeedChangeView())
                 {
-                    _jump = true;
+                    _fattyCannon.ResetState();
+                    MainCamera.enabled = !MainCamera.enabled;
+                }
+
+                if (_fattyMortar.IsNeedChangeView())
+                {
+                    _fattyMortar.ResetState();
+                    MainCamera.enabled = !MainCamera.enabled;
+                }
+
+                if (_gatelingGun.IsNeedChangeView())
+                {
+                    _gatelingGun.ResetState();
+                    MainCamera.enabled = !MainCamera.enabled;
                 }
             }
         }
         else
         {
-            if (_fattyCannon.IsNeedChangeView())
-            {
-                _fattyCannon.ResetState();
-                MainCamera.enabled = !MainCamera.enabled;
-            }
-
-            if (_fattyMortar.IsNeedChangeView())
-            {
-                _fattyMortar.ResetState();
-                MainCamera.enabled = !MainCamera.enabled;
-            }
-
-            if (_gatelingGun.IsNeedChangeView())
-            {
-                _gatelingGun.ResetState();
-                MainCamera.enabled = !MainCamera.enabled;
-            }
+            DeadCamera.enabled = true;
+            MainCamera.enabled = false;
+            _fattyCannon.enable = false;
+            _fattyMortar.enable = false;
+            _gatelingGun.enable = false;
         }
     }
 
     void FixedUpdate()
     {
-        if (MainCamera.enabled)
+        if (!_isGameOver)
         {
-            Move(Time.deltaTime);
-            transform.Rotate(new Vector3(0, Input.GetAxis("Mouse X") * speedRotate /** Time.fixedDeltaTime*/, 0));
+            if (MainCamera.enabled)
+            {
+                Move(Time.deltaTime);
+                transform.Rotate(new Vector3(0, Input.GetAxis("Mouse X") * speedRotate /** Time.fixedDeltaTime*/, 0));
 
-            Jump();
+                Jump();
+            }
         }
     }
     
@@ -147,37 +183,119 @@ public class Player : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("FattyCannon"))
+        if (!_isGameOver)
         {
-            allowFattyCannon = true;
-        }
+            if (other.CompareTag("FattyCannon"))
+            {
+                allowFattyCannon = true;
+            }
 
-        if (other.CompareTag("FattyMortar"))
-        {
-            allowFattyMortar = true;
-        }
+            if (other.CompareTag("FattyMortar"))
+            {
+                allowFattyMortar = true;
+            }
 
-        if (other.CompareTag("GatelingGun"))
-        {
-            allowGatelingGun = true;
+            if (other.CompareTag("GatelingGun"))
+            {
+                allowGatelingGun = true;
+            }
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("FattyCannon"))
+        if (!_isGameOver)
         {
-            allowFattyCannon = false;
-        }
+            if (other.CompareTag("FattyCannon"))
+            {
+                allowFattyCannon = false;
+            }
 
-        if (other.CompareTag("FattyMortar"))
-        {
-            allowFattyMortar = false;
-        }
+            if (other.CompareTag("FattyMortar"))
+            {
+                allowFattyMortar = false;
+            }
 
-        if (other.CompareTag("GatelingGun"))
-        {
-            allowGatelingGun = false;
+            if (other.CompareTag("GatelingGun"))
+            {
+                allowGatelingGun = false;
+            }
         }
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        if (!_isGameOver)
+        {
+            if ((System.DateTime.Now - _datetime).Milliseconds >= 500)
+            {
+                if (other.CompareTag("Slug"))
+                {
+                    if (_healthLevel > 0)
+                    {
+                        _healthLevel -= _slugAI.GetDamageLevel();
+                        Debug.LogFormat("PlayerHealth = {0}", _healthLevel);
+                    }
+
+                    OutPlayerHealth(_healthLevel);
+                    if (_healthLevel <= 0)
+                    {
+                        _healthLevel = 0;
+                        OutPlayerHealth(_healthLevel);
+                        GameOver();
+                    }
+
+                    _datetime = System.DateTime.Now;
+                }
+
+                if (other.CompareTag("SlugBoss"))
+                {
+                    if (_healthLevel > 0)
+                    {
+                        _healthLevel -= _slugBossAI.GetDamageLevel();
+                        Debug.LogFormat("PlayerHealth = {0}", _healthLevel);
+                    }
+
+                    OutPlayerHealth(_healthLevel);
+                    if (_healthLevel <= 0)
+                    {
+                        _healthLevel = 0;
+                        OutPlayerHealth(_healthLevel);
+                        GameOver();
+                    }
+
+                    _datetime = System.DateTime.Now;
+                }
+            }
+        }
+    }
+
+    private void GameOver()
+    {
+        if(!_isGameOver)
+        {
+            _isGameOver = true;
+
+            _anim.SetBool("IsWalking", false);
+            _rigidBody.isKinematic = true;
+
+            Quaternion rotateX = Quaternion.AngleAxis(90, Vector3.left);
+
+            transform.rotation = transform.rotation * rotateX;
+
+            PlayerHealthDisable();
+            Debug.LogFormat("ÈÃÐÀ ÎÊÎÍ×ÅÍÀ: ÂÛ ÏÐÎÈÃÐÀËÈ :(");
+        }
+    }
+
+    private void OutPlayerHealth (float health)
+    {
+        float ps = health * 100 / _health_100;
+        _textHealth.text = $"Health: {string.Format("{0:F0}", ps)}" + "%";
+    }
+
+    private void PlayerHealthDisable()
+    {
+        _textHealth.text = "";
     }
 }

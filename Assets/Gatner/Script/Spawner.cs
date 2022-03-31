@@ -6,9 +6,11 @@ using Random = System.Random;
 public class Spawner : MonoBehaviour
 {
     [SerializeField] private GameObject _enemyPrefabs;
+    [SerializeField] private GameObject _enemyBossPrefabs;
     [SerializeField] private Transform[] _spawnPoints;
     [SerializeField] private Transform[] _patrolPoints;
     [SerializeField] private SlugAI _slugAI;
+    [SerializeField] private SlugBossAI _slugBossAI;
 
     [SerializeField] private float _timeCuldown;
 
@@ -23,6 +25,7 @@ public class Spawner : MonoBehaviour
         _enemys = new List<GameObject>();
         _fillPoints = new bool[_spawnPoints.Length];
         _slugAI.SetPatrolPoints(_patrolPoints);
+        _slugBossAI.SetPatrolPoints(_patrolPoints);
     }
 
     private void Start()
@@ -57,6 +60,21 @@ public class Spawner : MonoBehaviour
             if (_countDie > 0)
                 Spawn(_countDie);
         }
+
+        CheckWin();
+    }
+
+    private void CheckWin()
+    {
+        for(int i = 0; i < _enemys.Count - 1; i++)
+        {
+            if (_enemys[i] != null)
+            {
+                return;
+            }
+        }
+
+        Debug.LogFormat("ÈÃÐÀ ÎÊÎÍ×ÅÍÀ: ÂÛ ÏÎÁÅÄÈËÈ!!!");
     }
 
     private void Spawn()
@@ -67,7 +85,14 @@ public class Spawner : MonoBehaviour
         for (int i = 0; i < _spawnPoints.Length; i++)
         {
             //idx = enemyId.Next(0, _enemyPrefabs.Length - 1);
-            _enemys.Add(Instantiate(_enemyPrefabs, _spawnPoints[i].position, Quaternion.identity));
+            if (i == 0)
+            {
+                _enemys.Add(Instantiate(_enemyBossPrefabs, _spawnPoints[i].position, Quaternion.identity));
+            }
+            else
+            {
+                _enemys.Add(Instantiate(_enemyPrefabs, _spawnPoints[i].position, Quaternion.identity));
+            }
             
             _fillPoints[i] = true;
         }
