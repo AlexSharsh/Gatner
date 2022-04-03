@@ -15,19 +15,24 @@ public class Player : MonoBehaviour
     public float speed = 2f;
     public float speedJump = 2f;
     public float speedRotate = 15f;
-    private bool _isSprint = false;
     private bool _isGameOver = false;
 
+    private bool _isMainView;
     private bool allowFattyCannon = false;
     private bool allowFattyMortar = false;
     private bool allowGatelingGun = false;
 
+    [SerializeField] private List<GameObject> _bombArsenal;
+    [SerializeField] private List<GameObject> _pelletArsenal;
+
     public FattyCannon _fattyCannon;
     public FattyMortar _fattyMortar;
     public GatelingGun _gatelingGun;
+    //public Bomb _bomb;
 
     private Camera MainCamera;
     [SerializeField] private Camera DeadCamera;
+    [SerializeField] private Camera PersonCamera;
 
     private Rigidbody _rigidBody;
     [SerializeField] private Animator _anim;
@@ -39,6 +44,10 @@ public class Player : MonoBehaviour
     private void Awake()
     {
         DeadCamera.enabled = false;
+        PersonCamera.enabled = false;
+
+        _isMainView = true;
+
         MainCamera = GetComponent<Camera>();
         MainCamera = Camera.main;
 
@@ -47,6 +56,8 @@ public class Player : MonoBehaviour
 
         _health_100 = _healthLevel;
         OutPlayerHealth(_healthLevel);
+
+        //_bomb = GetComponent<Bomb>();
     }
 
     // Start is called before the first frame update
@@ -60,28 +71,63 @@ public class Player : MonoBehaviour
     {
         if (!_isGameOver)
         {
-            if (MainCamera.enabled)
+            if (_isMainView)
             {
-                if (Input.GetKeyDown(KeyCode.E))
+                if (IsBombTake() || IsPelletTake())
                 {
-                    if (allowFattyCannon)
+                    MainCamera.enabled = false;
+                    PersonCamera.enabled = true;
+                }
+                else
+                {
+                    if (PersonCamera.enabled)
                     {
-                        MainCamera.enabled = !MainCamera.enabled;
-                        _fattyCannon.enable = !_fattyCannon.enable;
+                        MainCamera.enabled = true;
+                        PersonCamera.enabled = false;
                     }
 
-                    if (allowFattyMortar)
+                    if (Input.GetKeyDown(KeyCode.E))
                     {
-                        MainCamera.enabled = !MainCamera.enabled;
-                        _fattyMortar.enable = !_fattyMortar.enable;
-                    }
+                        if (allowFattyCannon)
+                        {
+                            MainCamera.enabled = false;
+                            _fattyCannon.enable = true;
+                            _isMainView = false;
+                        }
 
-                    if (allowGatelingGun)
-                    {
-                        MainCamera.enabled = !MainCamera.enabled;
-                        _gatelingGun.enable = !_gatelingGun.enable;
+                        if (allowFattyMortar)
+                        {
+                            MainCamera.enabled = false;
+                            _fattyMortar.enable = true;
+                            _isMainView = false;
+                        }
+
+                        if (allowGatelingGun)
+                        {
+                            MainCamera.enabled = false;
+                            _gatelingGun.enable = true;
+                            _isMainView = false;
+                        }
                     }
                 }
+                
+
+                //if (Input.GetKeyDown(KeyCode.V))
+                //{
+                //    if (!allowFattyCannon && !allowFattyMortar && !allowGatelingGun)
+                //    {
+                //        if (!PersonCamera.enabled)
+                //        {
+                //            MainCamera.enabled = false;
+                //            PersonCamera.enabled = true;
+                //        }
+                //        else
+                //        {
+                //            MainCamera.enabled = true;
+                //            PersonCamera.enabled = false;
+                //        }
+                //    }
+                //}
 
                 _direction.x = Input.GetAxis("Horizontal");
                 _direction.z = Input.GetAxis("Vertical");
@@ -101,26 +147,31 @@ public class Player : MonoBehaviour
                 if (_fattyCannon.IsNeedChangeView())
                 {
                     _fattyCannon.ResetState();
-                    MainCamera.enabled = !MainCamera.enabled;
+                    MainCamera.enabled = true;
+                    _isMainView = true;
                 }
 
                 if (_fattyMortar.IsNeedChangeView())
                 {
                     _fattyMortar.ResetState();
-                    MainCamera.enabled = !MainCamera.enabled;
+                    MainCamera.enabled = true;
+                    _isMainView = true;
                 }
 
                 if (_gatelingGun.IsNeedChangeView())
                 {
                     _gatelingGun.ResetState();
-                    MainCamera.enabled = !MainCamera.enabled;
+                    MainCamera.enabled = true;
+                    _isMainView = true;
                 }
             }
         }
         else
         {
+            _isMainView = false;
             DeadCamera.enabled = true;
             MainCamera.enabled = false;
+            PersonCamera.enabled = false;
             _fattyCannon.enable = false;
             _fattyMortar.enable = false;
             _gatelingGun.enable = false;
@@ -131,7 +182,7 @@ public class Player : MonoBehaviour
     {
         if (!_isGameOver)
         {
-            if (MainCamera.enabled)
+            if (_isMainView)
             {
                 Move(Time.deltaTime);
                 transform.Rotate(new Vector3(0, Input.GetAxis("Mouse X") * speedRotate /** Time.fixedDeltaTime*/, 0));
@@ -179,6 +230,44 @@ public class Player : MonoBehaviour
                 }
             }
         }
+    }
+
+    public void SetBombArsenal(List<GameObject> _bombList)
+    {
+        _bombArsenal = _bombList;
+    }
+
+    public void SetPelletArsenal(List<GameObject> _pelletList)
+    {
+        _pelletArsenal = _pelletList;
+    }
+
+    private bool IsBombTake()
+    {
+        for(int i = 0; i < _bombArsenal.Count; i++)
+        {
+            if (_bombArsenal[i])
+            {
+                if (_bombArsenal[i].GetComponent<Bomb>().IsTake())
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
+    private bool IsPelletTake()
+    {
+        for (int i = 0; i < _pelletArsenal.Count; i++)
+        {
+            if (_pelletArsenal[i])
+            {
+                if (_pelletArsenal[i].GetComponent<Pellet>().IsTake())
+                    return true;
+            }
+        }
+
+        return false;
     }
 
     private void OnTriggerEnter(Collider other)

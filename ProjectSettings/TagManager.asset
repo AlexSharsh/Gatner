@@ -19,6 +19,9 @@ TagManager:
   - SpawnerBossPoint
   - SlugBoss
   - DeadCamera
+  - PersonCamera
+  - Bomb
+  - Pellet
   layers:
   - Default
   - TransparentFX
