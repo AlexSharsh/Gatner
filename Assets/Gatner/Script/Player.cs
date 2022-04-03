@@ -7,7 +7,10 @@ public class Player : MonoBehaviour
     [SerializeField] float _healthLevel = 100f;
     [SerializeField] SlugAI _slugAI;
     [SerializeField] SlugBossAI _slugBossAI;
+    [SerializeField] Spawner _spawner;
     [SerializeField] TextMesh _textHealth;
+    [SerializeField] TextMesh _textPlayOff;
+    [SerializeField] TextMesh _textGameOver;
 
     private Vector3 _direction;
     private bool _jump = false;
@@ -53,9 +56,12 @@ public class Player : MonoBehaviour
 
         _anim = GetComponent<Animator>();
         _rigidBody = GetComponent<Rigidbody>();
+        _spawner = FindObjectOfType<Spawner>();
 
         _health_100 = _healthLevel;
         OutPlayerHealth(_healthLevel);
+        GameOffTextDisable();
+        GameOverTextDisable();
 
         //_bomb = GetComponent<Bomb>();
     }
@@ -164,6 +170,11 @@ public class Player : MonoBehaviour
                     MainCamera.enabled = true;
                     _isMainView = true;
                 }
+            }
+
+            if (_spawner.IsWin())
+            {
+                GameWinText();
             }
         }
         else
@@ -373,6 +384,7 @@ public class Player : MonoBehaviour
             transform.rotation = transform.rotation * rotateX;
 
             PlayerHealthDisable();
+            GameOverText();
             Debug.LogFormat("»√–¿ Œ ŒÕ◊≈Õ¿: ¬€ œ–Œ»√–¿À» :(");
         }
     }
@@ -386,5 +398,25 @@ public class Player : MonoBehaviour
     private void PlayerHealthDisable()
     {
         _textHealth.text = "";
+    }
+
+    private void GameWinText()
+    {
+        _textPlayOff.text = $"¬€ œŒ¡≈ƒ»À»!";
+    }
+
+    private void GameOverText()
+    {
+        _textGameOver.text = $"¬€ œ–Œ»√–¿À»!";
+    }
+
+    private void GameOffTextDisable()
+    {
+        _textPlayOff.text = "";
+    }
+
+    private void GameOverTextDisable()
+    {
+        _textGameOver.text = "";
     }
 }

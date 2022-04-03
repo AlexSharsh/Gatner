@@ -20,8 +20,11 @@ public class Spawner : MonoBehaviour
     [SerializeField] private List<GameObject> _enemys;
     [SerializeField] private float _timer;
 
+    private bool _isWin = false;
+
     private void Awake()
     {
+        _isWin = false;
         _enemys = new List<GameObject>();
         _fillPoints = new bool[_spawnPoints.Length];
         _slugAI.SetPatrolPoints(_patrolPoints);
@@ -74,7 +77,13 @@ public class Spawner : MonoBehaviour
             }
         }
 
+        _isWin = true;
         Debug.LogFormat("ÈÃĞÀ ÎÊÎÍ×ÅÍÀ: ÂÛ ÏÎÁÅÄÈËÈ!!!");
+    }
+
+    public bool IsWin()
+    {
+        return _isWin;
     }
 
     private void Spawn()
