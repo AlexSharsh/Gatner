@@ -9,6 +9,9 @@ EditorBuildSettings:
     path: Assets/Gatner/Scene/MainMenu.unity
     guid: 5cf705d27a1ac0c4184724eec98bac20
   - enabled: 1
+    path: Assets/Gatner/Scene/SettingMenu.unity
+    guid: e3430e1c56159fd4d8ab93afdebf4acf
+  - enabled: 1
     path: Assets/Gatner/Scene/Gatner.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
   m_configObjects: {}

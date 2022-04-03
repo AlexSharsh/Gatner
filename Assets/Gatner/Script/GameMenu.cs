@@ -13,6 +13,7 @@ public class GameMenu : MonoBehaviour
     private void Awake()
     {
         _buttonStart.onClick.AddListener(StartGame);
+        _buttonSetting.onClick.AddListener(Setting);
         _buttonQuit.onClick.AddListener(() => { Application.Quit(); });
     }
 
@@ -20,6 +21,11 @@ public class GameMenu : MonoBehaviour
     public void StartGame()
     {
         Time.timeScale = 1;
+        SceneManager.LoadScene(2);
+    }
+
+    public void Setting()
+    {
         SceneManager.LoadScene(1);
     }
 }
