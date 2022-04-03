@@ -64,6 +64,7 @@ public class Player : MonoBehaviour
         GameOverTextDisable();
 
         //_bomb = GetComponent<Bomb>();
+        //_bomb = GetComponent<Bomb>();
     }
 
     // Start is called before the first frame update
