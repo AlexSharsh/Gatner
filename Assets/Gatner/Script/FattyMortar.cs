@@ -10,8 +10,14 @@ public class FattyMortar : MonoBehaviour
     public float speedJump = 2f;
     public float speedRotate = 25f;
 
+
     [SerializeField] public Camera MortarCamera;
     [SerializeField] public Bullet1 _bullet1;
+    [SerializeField] public Pellet _pellet;
+    [SerializeField] TextMesh _textHealth;
+    [SerializeField] public int Shots = 10;
+
+    private System.DateTime _datetime = System.DateTime.Now;
 
     private bool pressedKeyE = false;
     Quaternion originRotation;
@@ -22,6 +28,7 @@ public class FattyMortar : MonoBehaviour
     void Start()
     {
         originRotation = transform.rotation;
+        ShotsDisable();
     }
 
     // Update is called once per frame
@@ -43,6 +50,8 @@ public class FattyMortar : MonoBehaviour
             {
                 Fire();
             }
+
+            OutShots(Shots);
         }
         else
         {
@@ -73,9 +82,14 @@ public class FattyMortar : MonoBehaviour
 
     private void Fire()
     {
-        var shieldObj = Instantiate(_bullet1, _bullet1.transform.position, _bullet1.transform.rotation);
-        var shield = shieldObj.GetComponent<Bullet1>();
-        shield.Init(/*_player.transform,*/ 1, 20f);
+        if (Shots > 0)
+        {
+            var shieldObj = Instantiate(_bullet1, _bullet1.transform.position, _bullet1.transform.rotation);
+            var shield = shieldObj.GetComponent<Bullet1>();
+            shield.Init(/*_player.transform,*/ 1, 20f);
+
+            Shots--;
+        }
     }
 
     public bool IsNeedChangeView()
@@ -87,5 +101,30 @@ public class FattyMortar : MonoBehaviour
     {
         enable = false;
         pressedKeyE = false;
+        ShotsDisable();
+    }
+
+    private void OutShots(int CountShots)
+    {
+        _textHealth.text = $"Shots: {string.Format("{0:F0}", CountShots)}";
+    }
+
+    private void ShotsDisable()
+    {
+        _textHealth.text = "";
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if ((System.DateTime.Now - _datetime).Milliseconds >= 100)
+        {
+            if (other.CompareTag("Pellet"))
+            {
+                Pellet pellet = FindObjectOfType<Pellet>();
+                Shots += pellet.GetShots();
+
+                _datetime = System.DateTime.Now;
+            }
+        }
     }
 }
