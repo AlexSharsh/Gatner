@@ -22,6 +22,7 @@ TagManager:
   - PersonCamera
   - Bomb
   - Pellet
+  - PauseMenu
   layers:
   - Default
   - TransparentFX
